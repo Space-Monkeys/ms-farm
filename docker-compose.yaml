@@ -1,0 +1,31 @@
+version: "3"
+services:
+        envfarm:
+                build:
+                        dockerfile: ./postgres/dockerfile
+                        context: .
+                image:  spacemonkeys/postgres
+                container_name: envfarm
+                ports:
+                        - "5432:5432"
+                networks:
+                        - farmnet
+        msfarm:
+                build:
+                        dockerfile: ./ms-farm/dockerfile
+                        context: .
+                image: spacemonkeys/msfarm
+                container_name: msfarm
+                ports:
+                        - "8320:8320"
+                networks:
+                        - farmnet
+                depends_on:
+                        - "envfarm"
+                environment:
+                        - SPRING_DATASOURCE_URL=jdbc:postgresql://envfarm:5432/farmbox
+networks:
+        farmnet:
+                driver: bridge
+
+
